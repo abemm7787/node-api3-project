@@ -1,32 +1,26 @@
-const {findId} = require("../posts/posts-model")
-
-
+const  findById = require("../users/users-model")
 
 function logger(req, res, next) {
   // DO YOUR MAGIC
-
-
-
 }
 
-function validateUserId(req, res, next) {
-  // DO YOUR MAGIC
-  findId(req.params.id)
-  .then(users => {
-    if(users){
+async function validateUserId(req, res, next) {
+  try {
+    const user = await findById.getById(req.params.id)
+    if(!user) {
+    res.status(404).json({message: 'user nowhere to found'})
+    } else {
+      req.user = user
+      res.status(200).json(user)
       next()
     }
-    else{
-      next({ status: 404, message:"Id does not exist "  ` Please correct ${req.params.id} we can not find this`})
-    }
-  })
-.catch(next)
+  } catch (err) {
+    res.status(500).json({message: 'can not find user'})
+  } 
 }
 
 
-
-
-
+  // DO YOUR MAGIC
 
 
 function validateUser(req, res, next) {
@@ -41,5 +35,10 @@ function validatePost(req, res, next) {
 
 
 
+module.exports={ 
+  logger,
+  validateUserId,
+  validateUser,
+  validatePost,
 
-module.exports = { logger, validateUserId,validatePost,validateUser}
+}

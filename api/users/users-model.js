@@ -9,6 +9,7 @@ module.exports = {
   remove,
 };
 
+
 function get() {
   return db('users');
 }
