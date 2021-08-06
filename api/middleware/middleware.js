@@ -1,44 +1,49 @@
-const  findById = require("../users/users-model")
+const User = require('../users/users-model');
+// const Post = require('../posts/posts-model');
 
-function logger(req, res, next) {
-  // DO YOUR MAGIC
-}
 
 async function validateUserId(req, res, next) {
+
   try {
-    const user = await findById.getById(req.params.id)
-    if(!user) {
-    res.status(404).json({message: 'user nowhere to found'})
-    } else {
-      req.user = user
-      res.status(200).json(user)
-      next()
+    const {id} = req.params.id // deconstructing requested id
+    const userId = await User.getById(req.params.id) 
+    if (!userId) {res.status(404).json({message: `user with id  ${id} not found`})} 
+     else {
+     req.user = userId
+    next()
     }
   } catch (err) {
-    res.status(500).json({message: 'can not find user'})
-  } 
+    res.status(500).json({
+      message: 'There was a problem finding the user.'
+    })
+  }
 }
 
-
-  // DO YOUR MAGIC
-
-
 function validateUser(req, res, next) {
-  // DO YOUR MAGIC
+
+  // derives from database 
+  const {name} = req.body
+  if (!name){ res.status(400).json({ message: 'missing required name field' })
+  } else {
+    req.name = name
+    next()
+  }
 }
 
 function validatePost(req, res, next) {
-  // DO YOUR MAGIC
+  const { text } = req.body
+  if (!text) {
+    res.status(400).json({ message: 'missing required text field' })
+  } else {
+    req.text = text
+    next()
+  }
 }
 
 // do not forget to expose these functions to other modules
+module.exports = {
 
-
-
-module.exports={ 
-  logger,
   validateUserId,
   validateUser,
-  validatePost,
-
+  validatePost
 }
